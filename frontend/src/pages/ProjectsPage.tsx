@@ -32,7 +32,7 @@ export function ProjectsPage() {
       setNewDesc('')
       navigate(`/projects/${p.id}`)
     },
-    onError: (err) => setCreateError((err as ApiError).detail),
+    onError: (err) => setCreateError(((err as unknown) as ApiError).detail || 'Erreur'),
   })
 
   const activeProjects = projects.filter((p) => !p.archived_at)

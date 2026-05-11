@@ -125,7 +125,7 @@ export function ProjectDetailPage() {
             border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', padding: '12px 16px',
             color: '#ef4444', fontSize: '13px',
           }}>
-            ⚠ {(uploadMutation.error as ApiError).detail}
+            ⚠ {((uploadMutation.error as unknown) as ApiError).detail || 'Erreur inconnue'}
           </div>
         )}
 
@@ -157,7 +157,7 @@ export function ProjectDetailPage() {
         {/* Tab content */}
         {tab === 'alertes' && <AlertsTab projectId={id!} alerts={alerts} />}
         {tab === 'bom' && <BomTab projectId={id!} boms={boms} />}
-        {tab === 'membres' && <MembersTab projectId={id!} members={members} />}
+        {tab === 'membres' && <MembersTab members={members} />}
       </div>
     </Layout>
   )
@@ -329,7 +329,7 @@ function BomTab({ projectId, boms }: { projectId: string; boms: BOM[] }) {
 }
 
 // --- Membres Tab ---
-function MembersTab({ projectId, members }: { projectId: string; members: Member[] }) {
+function MembersTab({ members }: { members: Member[] }) {
   const ROLE_LABELS: Record<string, string> = { owner: 'Owner', member: 'Membre', reader: 'Lecteur' }
 
   return (

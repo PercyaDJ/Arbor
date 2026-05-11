@@ -15,7 +15,7 @@ const SEVERITY_STYLES: Record<string, { bg: string; label: string }> = {
 }
 
 export function SeverityBadge({ severity }: { severity: string }) {
-  const s = SEVERITY_STYLES[severity?.toLowerCase()] ?? SEVERITY_STYLES.info
+  const s = SEVERITY_STYLES[severity?.toLowerCase()] || { bg: '#6b7280', label: 'Info' }
   return (
     <span style={{
       background: s.bg,
@@ -48,7 +48,7 @@ const STATUS_TEXT: Record<string, string> = {
 }
 
 export function StatusBadge({ status }: { status: string }) {
-  const s = STATUS_STYLES[status] ?? STATUS_STYLES.new
+  const s = STATUS_STYLES[status] || { bg: 'rgba(239,68,68,0.15)', label: 'Nouvelle' }
   const color = STATUS_TEXT[status] ?? '#ef4444'
   return (
     <span style={{

@@ -6,8 +6,8 @@ import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { api } from '@/api/client'
 import { Layout, PageHeader, StatCard } from '@/components/Layout'
-import { SeverityBadge, StatusBadge, Spinner, EmptyState } from '@/components/ui'
-import type { Alert, Project } from '@/api/client'
+import { Spinner, EmptyState } from '@/components/ui'
+import type { Project } from '@/api/client'
 
 export function DashboardPage() {
   const navigate = useNavigate()
@@ -16,9 +16,6 @@ export function DashboardPage() {
     queryKey: ['projects'],
     queryFn: () => api.getProjects(),
   })
-
-  // Récupérer les alertes de tous les projets actifs (max 5 projets pour le dashboard)
-  const activeProjects = projects.filter((p) => !p.archived_at).slice(0, 5)
 
   const totalAlerts = projects.reduce((sum, p) => sum + p.alert_count, 0)
   const criticalAlerts = projects.reduce((sum, p) => sum + p.critical_alert_count, 0)
