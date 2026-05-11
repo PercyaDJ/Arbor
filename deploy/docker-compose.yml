@@ -44,7 +44,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
-      - arbor.env.example
+      - .env
     ports:
       - "8000:8000"
     volumes:
@@ -73,7 +73,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
-      - arbor.env.example
+      - .env
     volumes:
       - bom_storage:/data/bom_storage
       - ../backend:/app  # Hot-reload en dev

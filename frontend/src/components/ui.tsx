@@ -158,34 +158,68 @@ export function EmptyState({ icon, title, description, action }: {
 }
 
 // --- Input ---
+import { useState } from 'react'
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string
   error?: string
 }
 
-export function Input({ label, error, style, ...props }: InputProps) {
+export function Input({ label, error, style, type, ...props }: InputProps) {
+  const [showPassword, setShowPassword] = useState(false)
+  const isPassword = type === 'password'
+  const currentType = isPassword ? (showPassword ? 'text' : 'password') : type
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
       {label && <label style={{ fontSize: '13px', fontWeight: 500, color: '#94a89d' }}>{label}</label>}
-      <input
-        style={{
-          background: '#131a16',
-          border: `1px solid ${error ? '#ef4444' : '#243029'}`,
-          borderRadius: '8px',
-          padding: '10px 14px',
-          color: '#e8f0ec',
-          fontSize: '14px',
-          fontFamily: 'inherit',
-          outline: 'none',
-          width: '100%',
-          boxSizing: 'border-box',
-          transition: 'border-color 150ms',
-          ...style,
-        }}
-        onFocus={(e) => { if (!error) e.currentTarget.style.borderColor = '#4ade80' }}
-        onBlur={(e) => { if (!error) e.currentTarget.style.borderColor = '#243029' }}
-        {...props}
-      />
+      <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+        <input
+          type={currentType}
+          style={{
+            background: '#131a16',
+            border: `1px solid ${error ? '#ef4444' : '#243029'}`,
+            borderRadius: '8px',
+            padding: '10px 14px',
+            paddingRight: isPassword ? '40px' : '14px',
+            color: '#e8f0ec',
+            fontSize: '14px',
+            fontFamily: 'inherit',
+            outline: 'none',
+            width: '100%',
+            boxSizing: 'border-box',
+            transition: 'border-color 150ms',
+            ...style,
+          }}
+          onFocus={(e) => { if (!error) e.currentTarget.style.borderColor = '#4ade80' }}
+          onBlur={(e) => { if (!error) e.currentTarget.style.borderColor = '#243029' }}
+          {...props}
+        />
+        {isPassword && (
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            style={{
+              position: 'absolute', right: '12px',
+              background: 'transparent', border: 'none',
+              color: '#5f7368', cursor: 'pointer',
+              padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+            aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+          >
+            {showPassword ? (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            ) : (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            )}
+          </button>
+        )}
+      </div>
       {error && <span style={{ fontSize: '12px', color: '#ef4444' }}>{error}</span>}
     </div>
   )
