@@ -57,10 +57,26 @@ if [ ! -f .env ]; then
     SECRET_KEY=$(openssl rand -hex 32)
     # Génération d'un mot de passe fort pour la base de données
     DB_PASSWORD=$(openssl rand -base64 24 | tr -d '\n/' | cut -c1-24)
+    # Demande interactive des identifiants admin
+    echo -e "\n${BLUE}--- Configuration du compte Super Administrateur ---${NC}"
+    read -p "Entrez l'email administrateur (défaut: admin@arbor.local) : " ADMIN_EMAIL
+    ADMIN_EMAIL=${ADMIN_EMAIL:-admin@arbor.local}
+
+    read -sp "Entrez le mot de passe administrateur (laissez vide pour générer aléatoirement) : " ADMIN_PASSWORD
+    echo ""
+    if [ -z "$ADMIN_PASSWORD" ]; then
+        ADMIN_PASSWORD=$(openssl rand -base64 12 | tr -d '\n/' | cut -c1-12)
+        echo -e "${BLUE}[i] Aucun mot de passe fourni, un mot de passe a été généré aléatoirement.${NC}"
+    fi
 
     # Remplacement dans le fichier .env
-    sed -i "s/^SECRET_KEY=.*/SECRET_KEY=$SECRET_KEY/" .env
+    sed -i "s/^ARBOR_SECRET_KEY=.*/ARBOR_SECRET_KEY=$SECRET_KEY/" .env
     sed -i "s/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=$DB_PASSWORD/" .env
+    # Remplacer avec separateurs alternatifs au cas où l'email contient un /
+    sed -i "s|^ARBOR_ADMIN_EMAIL=.*|ARBOR_ADMIN_EMAIL=$ADMIN_EMAIL|" .env
+    # Echapper les caractères spéciaux potentiels dans le mot de passe
+    ESCAPED_ADMIN_PASSWORD=$(printf '%s\n' "$ADMIN_PASSWORD" | sed -e 's/[\/&]/\\&/g')
+    sed -i "s/^ARBOR_ADMIN_PASSWORD=.*/ARBOR_ADMIN_PASSWORD=$ESCAPED_ADMIN_PASSWORD/" .env
 
     echo -e "${GREEN}[+] Clés secrètes générées et injectées dans .env.${NC}"
 else
@@ -83,18 +99,13 @@ echo -e "L'interface web (Frontend) est accessible sur le port : ${GREEN}3000${N
 echo -e "L'API (Backend) tourne sur le port : ${GREEN}8000${NC}"
 echo ""
 
-echo -e "${GREEN}[+] Recherche du lien d'invitation du premier Super Administrateur...${NC}"
-# On cherche le lien d'invitation dans les logs du backend
-INVITE_LINK=$(docker compose logs arbor-api | grep "Invitation Super Admin" | tail -n 1 | awk -F 'Invitation Super Admin: ' '{print $2}')
+echo -e "${GREEN}[+] Récupération des identifiants administrateur...${NC}"
+ADMIN_EMAIL=$(grep '^ARBOR_ADMIN_EMAIL=' .env | cut -d '=' -f2)
+ADMIN_PASS=$(grep '^ARBOR_ADMIN_PASSWORD=' .env | cut -d '=' -f2)
 
-if [ -n "$INVITE_LINK" ]; then
-    echo -e "🎯 ${BLUE}Lien d'invitation exclusif pour configurer le compte Administrateur :${NC}"
-    echo -e "${GREEN}$INVITE_LINK${NC}"
-    echo -e "\n(Copiez et collez cette URL dans votre navigateur. Ce lien est à usage unique !)"
-else
-    echo -e "${RED}[!] Impossible de récupérer le lien d'invitation automatiquement.${NC}"
-    echo -e "Vous pouvez consulter les logs manuellement avec la commande :"
-    echo -e "  cd deploy && docker compose logs arbor-api"
-fi
+echo -e "🎯 ${BLUE}Voici vos identifiants pour le compte Super Administrateur :${NC}"
+echo -e "   Email : ${GREEN}$ADMIN_EMAIL${NC}"
+echo -e "   Mot de passe : ${GREEN}$ADMIN_PASS${NC}"
+echo -e "\n(Connectez-vous sur http://localhost:3000 et changez votre mot de passe immédiatement si nécessaire.)"
 
 echo -e "\n${BLUE}[i] Pour la suite des opérations (Sauvegardes, Mises à jour, Configuration SMTP), consultez le fichier docs/DEX_ARBOR.md.${NC}"

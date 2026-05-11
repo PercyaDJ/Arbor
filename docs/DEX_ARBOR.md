@@ -60,13 +60,11 @@ docker compose up -d --build
 ```
 
 ### 2.4. Initialisation du premier administrateur
-Au premier démarrage, l'application crée automatiquement une organisation par défaut et génère un jeton d'invitation pour le premier Super Admin. 
+Au premier démarrage, l'application crée automatiquement une organisation par défaut et génère un compte Super Admin. 
 
-Pour récupérer ce lien d'invitation, consultez les logs de l'API :
-```bash
-docker compose logs arbor-api | grep "Invitation Super Admin"
-```
-Copiez l'URL affichée, ouvrez-la dans votre navigateur, et finalisez la création de votre compte.
+Les identifiants de ce compte (Email et Mot de passe généré aléatoirement) sont inscrits dans votre fichier `deploy/.env` aux lignes `ARBOR_ADMIN_EMAIL` et `ARBOR_ADMIN_PASSWORD`. Le script `install.sh` vous les affiche à la fin de l'installation.
+
+Connectez-vous directement sur l'interface web avec ces identifiants.
 
 ---
 
