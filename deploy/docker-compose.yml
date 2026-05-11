@@ -1,0 +1,108 @@
+# =============================================================================
+# ARBOR - Docker Compose
+# Déploiement self-hosted : 5 services (API, Worker, Frontend, PostgreSQL, Redis)
+# =============================================================================
+
+services:
+  # --- PostgreSQL ---
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-arbor}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-arbor_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-arbor}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-arbor}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- Redis ---
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- ARBOR API (FastAPI) ---
+  arbor-api:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - arbor.env.example
+    ports:
+      - "8000:8000"
+    volumes:
+      - bom_storage:/data/bom_storage
+      - ../backend:/app  # Hot-reload en dev
+    command: >
+      uvicorn app.main:app
+      --host 0.0.0.0
+      --port 8000
+      --reload
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # --- ARBOR Worker (Celery) ---
+  arbor-worker:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - arbor.env.example
+    volumes:
+      - bom_storage:/data/bom_storage
+      - ../backend:/app  # Hot-reload en dev
+    command: >
+      celery -A app.workers.celery_app worker
+      --beat
+      --loglevel=info
+      --concurrency=2
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # --- ARBOR Frontend (React + Nginx) ---
+  arbor-frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - arbor-api
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  bom_storage:
+    driver: local

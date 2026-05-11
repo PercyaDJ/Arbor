@@ -1,0 +1,74 @@
+[project]
+name = "arbor-backend"
+version = "0.1.0"
+description = "ARBOR - Automated Risk and Bill Of Materials Registry"
+readme = "README.md"
+license = {text = "AGPL-3.0-or-later"}
+requires-python = ">=3.11"
+authors = [
+    {name = "Jolan D."}
+]
+
+dependencies = [
+    # Web framework
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "python-multipart>=0.0.12",
+
+    # Database
+    "sqlalchemy>=2.0.36",
+    "psycopg2-binary>=2.9.10",
+    "alembic>=1.14.0",
+
+    # Cache & Queue
+    "redis>=5.2.0",
+    "celery[redis]>=5.4.0",
+
+    # Auth & Security
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+    "slowapi>=0.1.9",
+
+    # Pydantic & Settings
+    "pydantic>=2.10.0",
+    "pydantic-settings>=2.6.0",
+
+    # BOM Parsing
+    "cyclonedx-python-lib>=8.0.0",
+    "packageurl-python>=0.15.0",
+    "lxml>=5.3.0",
+
+    # Email
+    "aiosmtplib>=3.0.2",
+    "jinja2>=3.1.4",
+
+    # HTTP client (feeds)
+    "httpx>=0.28.0",
+
+    # Utilities
+    "python-dateutil>=2.9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-cov>=6.0.0",
+    "httpx>=0.28.0",
+    "ruff>=0.8.0",
+    "mypy>=1.13.0",
+]
+
+[build-system]
+requires = ["setuptools>=75.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
