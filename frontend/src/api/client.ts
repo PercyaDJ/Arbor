@@ -146,9 +146,16 @@ class ArborApiClient {
     if (!response.ok) {
       const error: ApiError = { detail: 'Erreur inconnue', status: response.status }
       try {
-        const data = await response.json()
-        error.detail = data.detail || error.detail
-      } catch { /* pas de body JSON */ }
+        const text = await response.text()
+        try {
+          const data = JSON.parse(text)
+          error.detail = data.detail || `[${response.status}] ${text.substring(0, 150)}`
+        } catch {
+          error.detail = `[${response.status}] ${text.substring(0, 150)}`
+        }
+      } catch (e) {
+        error.detail = `[${response.status}] Impossible de lire la réponse: ${String(e)}`
+      }
       throw error
     }
 

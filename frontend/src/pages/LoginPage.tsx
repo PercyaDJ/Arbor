@@ -24,7 +24,7 @@ export function LoginPage() {
       navigate('/dashboard')
     } catch (err) {
       const apiErr = err as ApiError
-      setError(apiErr.detail ?? 'Erreur de connexion')
+      setError(apiErr.detail ?? (err instanceof Error ? err.message : String(err)))
     } finally {
       setLoading(false)
     }

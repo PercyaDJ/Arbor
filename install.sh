@@ -46,12 +46,9 @@ systemctl start docker
 # 4. Configuration de l'application ARBOR
 echo -e "\n${GREEN}[+] Configuration de l'environnement ARBOR...${NC}"
 
-# Se placer dans le dossier deploy
-cd deploy || { echo -e "${RED}[!] Impossible de trouver le dossier 'deploy'. Exécutez ce script depuis la racine du dépôt ARBOR.${NC}"; exit 1; }
-
-if [ ! -f .env ]; then
-    echo -e "${BLUE}[i] Génération du fichier .env depuis arbor.env.example...${NC}"
-    cp arbor.env.example .env
+if [ ! -f deploy/.env ]; then
+    echo -e "${BLUE}[i] Génération du fichier deploy/.env depuis arbor.env.example...${NC}"
+    cp deploy/arbor.env.example deploy/.env
 
     # Génération d'une clé secrète forte pour l'API
     SECRET_KEY=$(openssl rand -hex 32)
@@ -70,23 +67,23 @@ if [ ! -f .env ]; then
     fi
 
     # Remplacement dans le fichier .env
-    sed -i "s/^ARBOR_SECRET_KEY=.*/ARBOR_SECRET_KEY=$SECRET_KEY/" .env
-    sed -i "s/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=$DB_PASSWORD/" .env
-    sed -i "s|^ARBOR_DATABASE_URL=.*|ARBOR_DATABASE_URL=postgresql://arbor:$DB_PASSWORD@postgres:5432/arbor|" .env
+    sed -i "s/^ARBOR_SECRET_KEY=.*/ARBOR_SECRET_KEY=$SECRET_KEY/" deploy/.env
+    sed -i "s/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=$DB_PASSWORD/" deploy/.env
+    sed -i "s|^ARBOR_DATABASE_URL=.*|ARBOR_DATABASE_URL=postgresql://arbor:$DB_PASSWORD@postgres:5432/arbor|" deploy/.env
     # Remplacer avec separateurs alternatifs au cas où l'email contient un /
-    sed -i "s|^ARBOR_ADMIN_EMAIL=.*|ARBOR_ADMIN_EMAIL=$ADMIN_EMAIL|" .env
+    sed -i "s|^ARBOR_ADMIN_EMAIL=.*|ARBOR_ADMIN_EMAIL=$ADMIN_EMAIL|" deploy/.env
     # Echapper les caractères spéciaux potentiels dans le mot de passe
     ESCAPED_ADMIN_PASSWORD=$(printf '%s\n' "$ADMIN_PASSWORD" | sed -e 's/[\/&]/\\&/g')
-    sed -i "s/^ARBOR_ADMIN_PASSWORD=.*/ARBOR_ADMIN_PASSWORD=$ESCAPED_ADMIN_PASSWORD/" .env
+    sed -i "s/^ARBOR_ADMIN_PASSWORD=.*/ARBOR_ADMIN_PASSWORD=$ESCAPED_ADMIN_PASSWORD/" deploy/.env
 
-    echo -e "${GREEN}[+] Clés secrètes générées et injectées dans .env.${NC}"
+    echo -e "${GREEN}[+] Clés secrètes générées et injectées dans deploy/.env.${NC}"
 else
     echo -e "${BLUE}[i] Un fichier .env existe déjà. Conservation de la configuration existante.${NC}"
 fi
 
 # 5. Démarrage des conteneurs
 echo -e "\n${GREEN}[+] Construction et démarrage des conteneurs Docker (cette étape peut prendre quelques minutes)...${NC}"
-docker compose up -d --build
+cd deploy && docker compose up -d --build && cd ..
 
 # 6. Attente et récupération du lien d'invitation Super Admin
 echo -e "\n${GREEN}[+] Démarrage en cours... En attente de l'initialisation de l'API (15 secondes)...${NC}"
@@ -101,8 +98,8 @@ echo -e "L'API (Backend) tourne sur le port : ${GREEN}8000${NC}"
 echo ""
 
 echo -e "${GREEN}[+] Récupération des identifiants administrateur...${NC}"
-ADMIN_EMAIL=$(grep '^ARBOR_ADMIN_EMAIL=' .env | cut -d '=' -f2)
-ADMIN_PASS=$(grep '^ARBOR_ADMIN_PASSWORD=' .env | cut -d '=' -f2)
+ADMIN_EMAIL=$(grep '^ARBOR_ADMIN_EMAIL=' deploy/.env | cut -d '=' -f2)
+ADMIN_PASS=$(grep '^ARBOR_ADMIN_PASSWORD=' deploy/.env | cut -d '=' -f2)
 
 echo -e "${BLUE}Voici vos identifiants pour le compte Super Administrateur :${NC}"
 echo -e "   Email : ${GREEN}$ADMIN_EMAIL${NC}"
