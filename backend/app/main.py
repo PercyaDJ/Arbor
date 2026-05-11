@@ -20,8 +20,11 @@ async def lifespan(app: FastAPI):
     - À l'arrêt : nettoyage si nécessaire.
     """
     # --- Startup ---
-    from app.core.database import get_session_factory
+    from app.core.database import get_engine, get_session_factory, Base
     from app.services.auth_service import init_default_org_and_admin
+
+    # Création automatique des tables si elles n'existent pas
+    Base.metadata.create_all(bind=get_engine())
 
     session_factory = get_session_factory()
     db = session_factory()
