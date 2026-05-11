@@ -1,5 +1,5 @@
 /**
- * ARBOR — Store d'authentification (state global léger sans Redux)
+ * ARBOR - Store d'authentification (state global léger sans Redux)
  */
 
 import { api } from '@/api/client'

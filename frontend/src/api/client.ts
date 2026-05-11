@@ -1,5 +1,5 @@
 /**
- * ARBOR — Client API TypeScript complet
+ * ARBOR - Client API TypeScript complet
  */
 
 const API_BASE = '/api/v1'

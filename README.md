@@ -1,4 +1,4 @@
-# 🌳 ARBOR
+# ARBOR
 
 **Automated Risk and Bill Of Materials Registry**
 
@@ -15,12 +15,12 @@ Quand une alerte critique est publiée par le CERT-FR ou le NVD, ARBOR répond i
 
 ## Fonctionnalités principales (v0.1 MVP)
 
-- 📦 **Dépôt de BOM** — CycloneDX (JSON/XML) et SPDX (JSON/XML)
-- 🔍 **Matching automatique** — Corrélation composants/vulnérabilités avec version range
-- 🚨 **Alertes en temps réel** — Notifications email quand un composant est affecté
-- 📊 **Dashboard projet** — Vue centralisée des alertes, BOM et membres
-- 🔐 **Authentification sécurisée** — JWT, bcrypt, invitation only
-- 🐳 **Self-hosted** — Docker Compose clé en main
+- **Dépôt de BOM** - CycloneDX (JSON/XML) et SPDX (JSON/XML)
+- **Matching automatique** - Corrélation composants/vulnérabilités avec version range
+- **Alertes en temps réel** - Notifications email quand un composant est affecté
+- 📊 **Dashboard projet** - Vue centralisée des alertes, BOM et membres
+- 🔐 **Authentification sécurisée** - JWT, bcrypt, invitation only
+- 🐳 **Self-hosted** - Docker Compose clé en main
 
 ## Stack technique
 
@@ -98,15 +98,15 @@ arbor/
 
 ARBOR est distribué sous un modèle de **double licence** :
 
-- **AGPL v3** — Pour les particuliers, projets open source, établissements d'enseignement et organismes à but non lucratif
-- **Licence Commerciale** — Pour les organisations déployant ARBOR en production sans publier leurs modifications
+- **AGPL v3** - Pour les particuliers, projets open source, établissements d'enseignement et organismes à but non lucratif
+- **Licence Commerciale** - Pour les organisations déployant ARBOR en production sans publier leurs modifications
 
 Voir [LICENSE](LICENSE) et [LICENSE-COMMERCIAL.md](LICENSE-COMMERCIAL.md) pour les détails.
 
 ## Auteur
 
-**Jolan D.** — Conception, développement et maintenance.
+**Jolan D.** - Conception, développement et maintenance.
 
 ---
 
-*ARBOR v0.1.0 — Mai 2026*
+*ARBOR v0.1.0 - Mai 2026*

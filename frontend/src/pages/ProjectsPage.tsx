@@ -1,5 +1,5 @@
 /**
- * ARBOR — Liste des projets
+ * ARBOR - Liste des projets
  */
 
 import { useState } from 'react'
@@ -76,7 +76,7 @@ export function ProjectsPage() {
                 id="project-desc"
               />
               {createError && (
-                <div style={{ color: '#ef4444', fontSize: '13px' }}>⚠ {createError}</div>
+                <div style={{ color: '#ef4444', fontSize: '13px' }}>{createError}</div>
               )}
               <div style={{ display: 'flex', gap: '8px' }}>
                 <Button
@@ -101,7 +101,7 @@ export function ProjectsPage() {
         ) : projects.length === 0 ? (
           <div style={{ marginTop: '32px' }}>
             <EmptyState
-              icon="📁"
+              icon=""
               title="Aucun projet"
               description="Créez votre premier projet pour commencer à déposer des BOM."
               action={<Button onClick={() => setShowCreate(true)}>+ Créer un projet</Button>}
@@ -147,7 +147,7 @@ function ProjectGrid({ projects, onSelect, dimmed }: {
                 background: 'rgba(239,68,68,0.15)', color: '#ef4444',
                 borderRadius: '20px', padding: '2px 10px', fontSize: '12px', fontWeight: 600,
               }}>
-                🚨 {project.critical_alert_count}
+                {project.critical_alert_count}
               </span>
             )}
           </div>

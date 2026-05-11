@@ -1,5 +1,5 @@
 /**
- * ARBOR — Traductions françaises (langue par défaut)
+ * ARBOR - Traductions françaises (langue par défaut)
  */
 
 export const fr = {

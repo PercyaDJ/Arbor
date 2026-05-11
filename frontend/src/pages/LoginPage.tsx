@@ -1,5 +1,5 @@
 /**
- * ARBOR — Page de connexion
+ * ARBOR - Page de connexion
  */
 
 import { useState } from 'react'
@@ -48,7 +48,7 @@ export function LoginPage() {
       }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <div style={{ fontSize: '48px', marginBottom: '12px' }}>🌳</div>
+          <div style={{ fontSize: '48px', marginBottom: '12px' }}></div>
           <h1 style={{
             fontSize: '28px', fontWeight: 800, color: 'var(--text-primary)',
             margin: '0 0 4px', letterSpacing: '-0.03em',
@@ -98,7 +98,7 @@ export function LoginPage() {
                 borderRadius: '8px', padding: '10px 14px',
                 color: '#ef4444', fontSize: '13px',
               }}>
-                ⚠ {error}
+                {error}
               </div>
             )}
 

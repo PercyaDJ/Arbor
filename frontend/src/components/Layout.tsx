@@ -1,5 +1,5 @@
 /**
- * ARBOR — Layout principal : sidebar + header
+ * ARBOR - Layout principal : sidebar + header
  */
 
 import React from 'react'
@@ -8,7 +8,7 @@ import { authStore } from '@/store/auth'
 
 const NAV_ITEMS = [
   { path: '/dashboard', icon: '⬡', label: 'Tableau de bord' },
-  { path: '/projects', icon: '📁', label: 'Projets' },
+  { path: '/projects', icon: '', label: 'Projets' },
 ]
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -34,7 +34,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {/* Logo */}
         <div style={{ padding: '24px 20px', borderBottom: '1px solid var(--border)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '24px' }}>🌳</span>
+            <span style={{ fontSize: '24px' }}></span>
             <div>
               <div style={{ fontWeight: 800, fontSize: '16px', color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>ARBOR</div>
               <div style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Risk Registry</div>
@@ -74,7 +74,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             background: 'var(--bg-tertiary)', marginBottom: '8px',
           }}>
             <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '2px' }}>
-              {user?.display_name ?? '—'}
+              {user?.display_name ?? '-'}
             </div>
             <div style={{ fontSize: '11px', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {user?.email}
@@ -104,7 +104,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               e.currentTarget.style.color = 'var(--text-muted)'
             }}
           >
-            ↩ Déconnexion
+            Déconnexion
           </button>
         </div>
       </aside>

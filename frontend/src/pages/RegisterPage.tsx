@@ -1,5 +1,5 @@
 /**
- * ARBOR — Page d'inscription par invitation
+ * ARBOR - Page d'inscription par invitation
  */
 
 import { useState } from 'react'
@@ -56,7 +56,7 @@ export function RegisterPage() {
     }}>
       <div className="arbor-animate-in" style={{ width: '100%', maxWidth: '420px' }}>
         <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-          <div style={{ fontSize: '48px', marginBottom: '12px' }}>🌳</div>
+          <div style={{ fontSize: '48px', marginBottom: '12px' }}></div>
           <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 4px' }}>
             Créer votre compte
           </h1>
@@ -71,7 +71,7 @@ export function RegisterPage() {
         }}>
           {success ? (
             <div style={{ textAlign: 'center', padding: '16px 0' }}>
-              <div style={{ fontSize: '40px', marginBottom: '12px' }}>✅</div>
+              <div style={{ fontSize: '40px', marginBottom: '12px' }}></div>
               <div style={{ color: 'var(--accent)', fontWeight: 600, marginBottom: '8px' }}>
                 Compte créé avec succès !
               </div>
@@ -113,7 +113,7 @@ export function RegisterPage() {
                   background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
                   borderRadius: '8px', padding: '10px 14px', color: '#ef4444', fontSize: '13px',
                 }}>
-                  ⚠ {error}
+                  {error}
                 </div>
               )}
 

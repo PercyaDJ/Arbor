@@ -1,5 +1,5 @@
 /**
- * ARBOR — Composants UI de base
+ * ARBOR - Composants UI de base
  * Badge sévérité, statut alerte, boutons, cartes, spinner
  */
 

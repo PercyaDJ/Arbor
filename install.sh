@@ -16,7 +16,7 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}====================================================${NC}"
-echo -e "${BLUE}       🌳 Installation de la stack ARBOR 🌳         ${NC}"
+echo -e "${BLUE}       Installation de la stack ARBOR         ${NC}"
 echo -e "${BLUE}====================================================${NC}"
 
 # 1. Vérification des privilèges
@@ -92,7 +92,7 @@ echo -e "\n${GREEN}[+] Démarrage en cours... En attente de l'initialisation de 
 sleep 15
 
 echo -e "\n${BLUE}====================================================${NC}"
-echo -e "${GREEN}✅ ARBOR est maintenant installé et en cours d'exécution !${NC}"
+echo -e "${GREEN}ARBOR est maintenant installé et en cours d'exécution !${NC}"
 echo -e "${BLUE}====================================================${NC}"
 
 echo -e "L'interface web (Frontend) est accessible sur le port : ${GREEN}3000${NC}"
@@ -103,7 +103,7 @@ echo -e "${GREEN}[+] Récupération des identifiants administrateur...${NC}"
 ADMIN_EMAIL=$(grep '^ARBOR_ADMIN_EMAIL=' .env | cut -d '=' -f2)
 ADMIN_PASS=$(grep '^ARBOR_ADMIN_PASSWORD=' .env | cut -d '=' -f2)
 
-echo -e "🎯 ${BLUE}Voici vos identifiants pour le compte Super Administrateur :${NC}"
+echo -e "${BLUE}Voici vos identifiants pour le compte Super Administrateur :${NC}"
 echo -e "   Email : ${GREEN}$ADMIN_EMAIL${NC}"
 echo -e "   Mot de passe : ${GREEN}$ADMIN_PASS${NC}"
 echo -e "\n(Connectez-vous sur http://localhost:3000 et changez votre mot de passe immédiatement si nécessaire.)"

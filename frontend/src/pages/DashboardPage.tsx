@@ -1,5 +1,5 @@
 /**
- * ARBOR — Dashboard principal
+ * ARBOR - Dashboard principal
  */
 
 import { useQuery } from '@tanstack/react-query'
@@ -34,10 +34,10 @@ export function DashboardPage() {
           display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
           gap: '16px', margin: '28px 0',
         }}>
-          <StatCard icon="📁" label="Projets actifs" value={activeProjectCount} color="var(--accent)" />
-          <StatCard icon="🔔" label="Alertes actives" value={totalAlerts} color="#f97316" />
-          <StatCard icon="🚨" label="Alertes critiques" value={criticalAlerts} color="#ef4444" />
-          <StatCard icon="🔍" label="Sources surveillées" value={2} color="#3b82f6" />
+          <StatCard icon="" label="Projets actifs" value={activeProjectCount} color="var(--accent)" />
+          <StatCard icon="" label="Alertes actives" value={totalAlerts} color="#f97316" />
+          <StatCard icon="" label="Alertes critiques" value={criticalAlerts} color="#ef4444" />
+          <StatCard icon="" label="Sources surveillées" value={2} color="#3b82f6" />
         </div>
 
         {/* Projects list */}
@@ -46,7 +46,7 @@ export function DashboardPage() {
             fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)',
             margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: '8px',
           }}>
-            📁 Projets récents
+            Projets récents
           </h2>
 
           {loadingProjects ? (
@@ -55,7 +55,7 @@ export function DashboardPage() {
             </div>
           ) : projects.length === 0 ? (
             <EmptyState
-              icon="📁"
+              icon=""
               title="Aucun projet"
               description="Créez votre premier projet pour commencer à déposer des BOM."
               action={
@@ -138,7 +138,7 @@ function ProjectRow({ project, onClick }: { project: Project; onClick: () => voi
       <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexShrink: 0 }}>
         {project.critical_alert_count > 0 && (
           <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '13px', color: '#ef4444', fontWeight: 600 }}>
-            🚨 {project.critical_alert_count}
+            {project.critical_alert_count}
           </span>
         )}
         {project.alert_count > 0 && (

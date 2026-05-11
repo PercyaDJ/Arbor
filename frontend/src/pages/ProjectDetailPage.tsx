@@ -1,5 +1,5 @@
 /**
- * ARBOR — Page détail projet (BOM + Alertes + Membres)
+ * ARBOR - Page détail projet (BOM + Alertes + Membres)
  */
 
 import { useState, useRef } from 'react'
@@ -115,7 +115,7 @@ export function ProjectDetailPage() {
             border: '1px solid var(--accent-muted)', borderRadius: '8px', padding: '12px 16px',
             color: 'var(--accent)', fontSize: '13px',
           }}>
-            ✓ BOM déposée — {uploadMutation.data?.components_added} composants ajoutés,{' '}
+            ✓ BOM déposée - {uploadMutation.data?.components_added} composants ajoutés,{' '}
             {uploadMutation.data?.components_existing} existants
           </div>
         )}
@@ -125,16 +125,16 @@ export function ProjectDetailPage() {
             border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', padding: '12px 16px',
             color: '#ef4444', fontSize: '13px',
           }}>
-            ⚠ {((uploadMutation.error as unknown) as ApiError).detail || 'Erreur inconnue'}
+            {((uploadMutation.error as unknown) as ApiError).detail || 'Erreur inconnue'}
           </div>
         )}
 
         {/* Tabs */}
         <div style={{ display: 'flex', gap: '4px', margin: '24px 0 20px', borderBottom: '1px solid var(--border)', paddingBottom: '0' }}>
           {([
-            { key: 'alertes', label: `Alertes (${project.alert_count})`, icon: '🔔' },
-            { key: 'bom', label: 'BOM', icon: '📦' },
-            { key: 'membres', label: 'Membres', icon: '👥' },
+            { key: 'alertes', label: `Alertes (${project.alert_count})`, icon: '' },
+            { key: 'bom', label: 'BOM', icon: '' },
+            { key: 'membres', label: 'Membres', icon: '' },
           ] as { key: Tab; label: string; icon: string }[]).map(({ key, label, icon }) => (
             <button
               key={key}
@@ -179,7 +179,7 @@ function AlertsTab({ projectId, alerts }: { projectId: string; alerts: Alert[] }
     : alerts
 
   if (alerts.length === 0) {
-    return <EmptyState icon="✅" title="Aucune alerte" description="Votre projet ne présente aucune vulnérabilité connue." />
+    return <EmptyState icon="" title="Aucune alerte" description="Votre projet ne présente aucune vulnérabilité connue." />
   }
 
   return (
@@ -255,7 +255,7 @@ function BomTab({ projectId, boms }: { projectId: string; boms: BOM[] }) {
   if (boms.length === 0) {
     return (
       <EmptyState
-        icon="📦"
+        icon=""
         title="Aucune BOM déposée"
         description="Utilisez le bouton 'Déposer une BOM' pour analyser votre première BOM."
       />
@@ -335,7 +335,7 @@ function MembersTab({ members }: { members: Member[] }) {
   return (
     <div>
       {members.length === 0 ? (
-        <EmptyState icon="👥" title="Aucun membre" />
+        <EmptyState icon="" title="Aucun membre" />
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {members.map((m) => (

@@ -21,6 +21,7 @@ function PrivateRoute({ children }: { children: JSX.Element }) {
 
 function App() {
   const [isReady, setIsReady] = useState(false)
+  const [, setTick] = useState(0)
 
   useEffect(() => {
     // Initialiser l'état d'authentification
@@ -28,7 +29,7 @@ function App() {
 
     const unsubscribe = authStore.subscribe(() => {
       // Forcer un re-render quand l'état d'auth change (ex: logout)
-      setIsReady((prev) => !prev ? true : prev) 
+      setTick(t => t + 1)
     })
 
     return unsubscribe
