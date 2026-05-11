@@ -34,6 +34,13 @@ Quand une alerte critique est publiée par le CERT-FR ou le NVD, ARBOR répond i
 | UI | shadcn/ui |
 | Déploiement | Docker Compose |
 
+## Prérequis & Dimensionnement
+
+Pour des performances optimales, ARBOR est conçu pour tourner sur une architecture modeste. Voir le guide complet : [**Guide de Dimensionnement (Sizing)**](docs/deployment_sizing.md).
+
+- **Minimal** : 2 vCPU, 4 Go RAM, 20 Go SSD
+- **Recommandé** : 4 vCPU, 8 Go RAM, 50 Go SSD (LXC/VM)
+
 ## Quick Start
 
 ```bash
