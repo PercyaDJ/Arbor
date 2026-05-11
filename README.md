@@ -61,6 +61,10 @@ docker compose up -d
 # API docs : http://localhost:8000/api/docs
 ```
 
+## Documentation d'Exploitation (DEX)
+
+Pour une installation complète en production, incluant la sécurisation du `.env`, l'initialisation du premier administrateur, les procédures de sauvegarde (backup/restore) et de mise à jour, veuillez consulter le **[Dossier d'Exploitation complet (DEX)](docs/DEX_ARBOR.md)**.
+
 ## Structure du projet
 
 ```
