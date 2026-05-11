@@ -72,6 +72,7 @@ if [ ! -f .env ]; then
     # Remplacement dans le fichier .env
     sed -i "s/^ARBOR_SECRET_KEY=.*/ARBOR_SECRET_KEY=$SECRET_KEY/" .env
     sed -i "s/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=$DB_PASSWORD/" .env
+    sed -i "s|^ARBOR_DATABASE_URL=.*|ARBOR_DATABASE_URL=postgresql://arbor:$DB_PASSWORD@postgres:5432/arbor|" .env
     # Remplacer avec separateurs alternatifs au cas où l'email contient un /
     sed -i "s|^ARBOR_ADMIN_EMAIL=.*|ARBOR_ADMIN_EMAIL=$ADMIN_EMAIL|" .env
     # Echapper les caractères spéciaux potentiels dans le mot de passe
