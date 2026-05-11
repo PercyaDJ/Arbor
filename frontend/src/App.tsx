@@ -1,38 +1,55 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { authStore } from '@/store/auth'
+
+import { LoginPage } from '@/pages/LoginPage'
+import { RegisterPage } from '@/pages/RegisterPage'
+import { DashboardPage } from '@/pages/DashboardPage'
+import { ProjectsPage } from '@/pages/ProjectsPage'
+import { ProjectDetailPage } from '@/pages/ProjectDetailPage'
+
+function PrivateRoute({ children }: { children: JSX.Element }) {
+  const isAuth = authStore.isAuthenticated()
+  const location = useLocation()
+
+  if (!isAuth) {
+    return <Navigate to="/login" state={{ from: location }} replace />
+  }
+
+  return children
+}
 
 function App() {
+  const [isReady, setIsReady] = useState(false)
+
+  useEffect(() => {
+    // Initialiser l'état d'authentification
+    authStore.loadUser().finally(() => setIsReady(true))
+
+    const unsubscribe = authStore.subscribe(() => {
+      // Forcer un re-render quand l'état d'auth change (ex: logout)
+      setIsReady((prev) => !prev ? true : prev) 
+    })
+
+    return unsubscribe
+  }, [])
+
+  if (!isReady) return null // Éviter les flashs de redirection
+
   return (
     <Routes>
-      <Route path="/" element={
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '100vh',
-          background: 'var(--bg-primary)',
-          color: 'var(--text-primary)',
-          fontFamily: 'Inter, sans-serif',
-        }}>
-          <h1 style={{ fontSize: '3rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-            🌳 ARBOR
-          </h1>
-          <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', marginBottom: '2rem' }}>
-            Automated Risk & Bill Of Materials Registry
-          </p>
-          <p style={{
-            padding: '1rem 2rem',
-            background: 'var(--bg-secondary)',
-            borderRadius: '0.75rem',
-            border: '1px solid var(--border)',
-            color: 'var(--accent)',
-            fontWeight: 500,
-          }}>
-            v0.1.0 — MVP en cours de développement
-          </p>
-        </div>
-      } />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      
+      {/* Protected Routes */}
+      <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
+      <Route path="/projects" element={<PrivateRoute><ProjectsPage /></PrivateRoute>} />
+      <Route path="/projects/new" element={<PrivateRoute><ProjectsPage /></PrivateRoute>} />
+      <Route path="/projects/:id" element={<PrivateRoute><ProjectDetailPage /></PrivateRoute>} />
+
+      {/* Default Redirect */}
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   )
 }

@@ -30,7 +30,7 @@ dependencies = [
     "slowapi>=0.1.9",
 
     # Pydantic & Settings
-    "pydantic>=2.10.0",
+    "pydantic[email]>=2.10.0",
     "pydantic-settings>=2.6.0",
 
     # BOM Parsing
@@ -47,6 +47,7 @@ dependencies = [
 
     # Utilities
     "python-dateutil>=2.9.0",
+    "packaging>=24.0",
 ]
 
 [project.optional-dependencies]
