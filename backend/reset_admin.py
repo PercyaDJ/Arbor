@@ -18,6 +18,16 @@ def reset_admin():
     users = db.query(User).all()
     print(f"Total users in DB: {len(users)}")
     
+    try:
+        from app.services.auth_service import init_default_org_and_admin
+        print("Attempting to run init_default_org_and_admin...")
+        org, admin_created = init_default_org_and_admin(db)
+        print("Success! Admin user was just created.")
+    except Exception as e:
+        import traceback
+        print("FAILED to create admin!")
+        print(traceback.format_exc())
+    
     admin = db.query(User).filter(User.email == settings.admin_email).first()
     if not admin:
         print("ERROR: Admin user not found in the database!")
