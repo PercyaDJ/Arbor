@@ -3,7 +3,7 @@
  * Badge sévérité, statut alerte, boutons, cartes, spinner
  */
 
-import React from 'react'
+import React, { useState } from 'react'
 
 // --- Severity Badge ---
 const SEVERITY_STYLES: Record<string, { bg: string; label: string }> = {
@@ -158,7 +158,6 @@ export function EmptyState({ icon, title, description, action }: {
 }
 
 // --- Input ---
-import { useState } from 'react'
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string
   error?: string

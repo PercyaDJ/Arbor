@@ -6,9 +6,10 @@ import { useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/api/client'
+import { authStore } from '@/store/auth'
 import { Layout, PageHeader } from '@/components/Layout'
-import { Button, SeverityBadge, StatusBadge, Spinner, EmptyState, Select, Card } from '@/components/ui'
-import type { Alert, BOM, Member, ApiError } from '@/api/client'
+import { Button, SeverityBadge, StatusBadge, Spinner, EmptyState, Select, Card, Input } from '@/components/ui'
+import type { Alert, BOM, Member, ApiError, Project } from '@/api/client'
 
 type Tab = 'alertes' | 'bom' | 'membres' | 'parametres'
 
@@ -159,7 +160,7 @@ export function ProjectDetailPage() {
         {tab === 'alertes' && <AlertsTab projectId={id!} alerts={alerts} />}
         {tab === 'bom' && <BomTab projectId={id!} boms={boms} />}
         {tab === 'membres' && <MembersTab projectId={id!} members={members} />}
-        {tab === 'parametres' && <ParametresTab projectId={id!} project={project} members={members} />}
+        {tab === 'parametres' && <ParametresTab projectId={id!} members={members} />}
       </div>
     </Layout>
   )
@@ -336,7 +337,7 @@ function MembersTab({ projectId, members }: { projectId: string; members: Member
   const { user } = authStore.getState()
   const currentUserRole = members.find(m => m.user_id === user?.id)?.role
   const isOwner = currentUserRole === 'owner'
-  
+
   const ROLE_LABELS: Record<string, string> = { owner: 'Owner', member: 'Membre', reader: 'Lecteur' }
 
   const removeMember = useMutation({
@@ -371,7 +372,7 @@ function MembersTab({ projectId, members }: { projectId: string; members: Member
                 }}>
                   {ROLE_LABELS[m.role] ?? m.role}
                 </span>
-                
+
                 {isOwner && m.user_id !== user?.id && (
                   <button
                     onClick={() => {
@@ -398,14 +399,13 @@ function MembersTab({ projectId, members }: { projectId: string; members: Member
 }
 
 // --- Parametres Tab ---
-import { authStore } from '@/store/auth'
 
-function ParametresTab({ projectId, project, members }: { projectId: string; project: Project; members: Member[] }) {
+function ParametresTab({ projectId, members }: { projectId: string; members: Member[] }) {
   const qc = useQueryClient()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [role, setRole] = useState('reader')
-  
+
   const { user } = authStore.getState()
   const currentUserRole = members.find(m => m.user_id === user?.id)?.role
   const isOwner = currentUserRole === 'owner'
@@ -428,17 +428,17 @@ function ParametresTab({ projectId, project, members }: { projectId: string; pro
         <Card>
           <h2 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 16px' }}>Ajouter un membre</h2>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
-             <div style={{ flex: 1 }}>
-               <Input label="Email de l'utilisateur" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@exemple.com" />
-             </div>
-             <div style={{ flexShrink: 0, width: '150px' }}>
-                <Select label="Rôle" value={role} onChange={(e) => setRole(e.target.value)}>
-                  <option value="reader">Lecteur</option>
-                  <option value="member">Membre</option>
-                  <option value="owner">Owner</option>
-                </Select>
-             </div>
-             <Button disabled={!email} onClick={() => alert("L'invitation par email n'est pas encore implémentée dans cette démo.")}>Inviter</Button>
+            <div style={{ flex: 1 }}>
+              <Input label="Email de l'utilisateur" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@exemple.com" />
+            </div>
+            <div style={{ flexShrink: 0, width: '150px' }}>
+              <Select label="Rôle" value={role} onChange={(e) => setRole(e.target.value)}>
+                <option value="reader">Lecteur</option>
+                <option value="member">Membre</option>
+                <option value="owner">Owner</option>
+              </Select>
+            </div>
+            <Button disabled={!email} onClick={() => alert("L'invitation par email n'est pas encore implémentée dans cette démo.")}>Inviter</Button>
           </div>
         </Card>
       )}
@@ -450,11 +450,11 @@ function ParametresTab({ projectId, project, members }: { projectId: string; pro
             Configurez ici vos clés API pour vous connecter à des bases de vulnérabilités privées ou restreintes.
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-             <Input label="Clé API NVD (National Vulnerability Database)" type="password" placeholder="••••••••••••••••" />
-             <Input label="Clé API GitHub (GitHub Advisory)" type="password" placeholder="••••••••••••••••" />
-             <div style={{ marginTop: '8px' }}>
-               <Button onClick={() => alert("Clés API sauvegardées avec succès !")}>Enregistrer les clés</Button>
-             </div>
+            <Input label="Clé API NVD (National Vulnerability Database)" type="password" placeholder="••••••••••••••••" />
+            <Input label="Clé API GitHub (GitHub Advisory)" type="password" placeholder="••••••••••••••••" />
+            <div style={{ marginTop: '8px' }}>
+              <Button onClick={() => alert("Clés API sauvegardées avec succès !")}>Enregistrer les clés</Button>
+            </div>
           </div>
         </Card>
       )}
@@ -464,7 +464,7 @@ function ParametresTab({ projectId, project, members }: { projectId: string; pro
         <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '16px' }}>
           Action irréversible. Vous perdrez l'accès à ce projet.
         </p>
-        <Button 
+        <Button
           onClick={() => {
             if (confirm("Êtes-vous sûr de vouloir quitter ce projet ? Vous devrez être invité à nouveau.")) {
               leaveProject.mutate()

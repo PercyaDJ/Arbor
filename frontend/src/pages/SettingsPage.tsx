@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Layout, PageHeader } from '@/components/Layout'
 import { Button, Input, Card } from '@/components/ui'
 import { authStore } from '@/store/auth'
@@ -6,7 +6,7 @@ import { api } from '@/api/client'
 import type { ApiError } from '@/api/client'
 
 export function SettingsPage() {
-  const user = authStore.user
+  const user = authStore.getState().user
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -17,7 +17,7 @@ export function SettingsPage() {
     e.preventDefault()
     setError('')
     setSuccess('')
-    
+
     if (newPassword.length < 8) {
       setError('Le nouveau mot de passe doit faire au moins 8 caractères.')
       return
