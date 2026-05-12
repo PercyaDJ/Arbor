@@ -9,6 +9,7 @@ import { authStore } from '@/store/auth'
 const NAV_ITEMS = [
   { path: '/dashboard', icon: '⬡', label: 'Tableau de bord' },
   { path: '/projects', icon: '', label: 'Projets' },
+  { path: '/settings', icon: '', label: 'Paramètres' },
 ]
 
 export function Layout({ children }: { children: React.ReactNode }) {

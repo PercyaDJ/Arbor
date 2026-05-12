@@ -17,6 +17,7 @@ from app.models.enums import AuditAction, BOMFormat, BOMType, ComponentType
 from app.models.user import User
 from app.parsers.cyclonedx_parser import parse_cyclonedx_json, parse_cyclonedx_xml
 from app.parsers.spdx_parser import parse_spdx_json, parse_spdx_xml
+from app.parsers.csv_parser import parse_csv
 from app.services.audit_service import log_action
 
 
@@ -52,6 +53,8 @@ def detect_bom_format(filename: str, content: bytes) -> BOMFormat:
         if "cdx" in fname or "cyclone" in fname:
             return BOMFormat.CYCLONEDX_XML
         return BOMFormat.SPDX_XML
+    if fname.endswith(".csv"):
+        return BOMFormat.CSV
 
     raise BOMError("Format de fichier BOM non reconnu. Formats supportés : CycloneDX, SPDX (JSON/XML)")
 
@@ -94,7 +97,7 @@ def deposit_bom(
     project_dir.mkdir(parents=True, exist_ok=True)
 
     bom_id = uuid.uuid4()
-    file_ext = "json" if "json" in bom_format.value else "xml"
+    file_ext = "json" if "json" in bom_format.value else ("xml" if "xml" in bom_format.value else "csv")
     file_path = project_dir / f"{bom_id}.{file_ext}"
     file_path.write_bytes(content)
 
@@ -258,6 +261,7 @@ def _parse_bom(bom_format: BOMFormat, content: bytes) -> dict:
         BOMFormat.CYCLONEDX_XML: parse_cyclonedx_xml,
         BOMFormat.SPDX_JSON: parse_spdx_json,
         BOMFormat.SPDX_XML: parse_spdx_xml,
+        BOMFormat.CSV: parse_csv,
     }
     parser = parsers.get(bom_format)
     if parser is None:

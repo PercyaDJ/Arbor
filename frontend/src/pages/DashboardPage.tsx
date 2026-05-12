@@ -23,7 +23,7 @@ export function DashboardPage() {
 
   return (
     <Layout>
-      <div style={{ padding: '28px 32px', maxWidth: '1200px' }}>
+      <div style={{ padding: '28px 32px', width: '100%', boxSizing: 'border-box' }}>
         <PageHeader
           title="Tableau de bord"
           subtitle="Vue d'ensemble de votre posture de sécurité"

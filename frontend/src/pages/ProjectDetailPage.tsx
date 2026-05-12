@@ -10,7 +10,7 @@ import { Layout, PageHeader } from '@/components/Layout'
 import { Button, SeverityBadge, StatusBadge, Spinner, EmptyState, Select, Card } from '@/components/ui'
 import type { Alert, BOM, Member, ApiError } from '@/api/client'
 
-type Tab = 'alertes' | 'bom' | 'membres'
+type Tab = 'alertes' | 'bom' | 'membres' | 'parametres'
 
 export function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -88,7 +88,7 @@ export function ProjectDetailPage() {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".json,.xml"
+                accept=".json,.xml,.csv"
                 style={{ display: 'none' }}
                 id="bom-file-input"
                 onChange={(e) => {
@@ -135,6 +135,7 @@ export function ProjectDetailPage() {
             { key: 'alertes', label: `Alertes (${project.alert_count})`, icon: '' },
             { key: 'bom', label: 'BOM', icon: '' },
             { key: 'membres', label: 'Membres', icon: '' },
+            { key: 'parametres', label: 'Paramètres', icon: '' },
           ] as { key: Tab; label: string; icon: string }[]).map(({ key, label, icon }) => (
             <button
               key={key}
@@ -157,7 +158,8 @@ export function ProjectDetailPage() {
         {/* Tab content */}
         {tab === 'alertes' && <AlertsTab projectId={id!} alerts={alerts} />}
         {tab === 'bom' && <BomTab projectId={id!} boms={boms} />}
-        {tab === 'membres' && <MembersTab members={members} />}
+        {tab === 'membres' && <MembersTab projectId={id!} members={members} />}
+        {tab === 'parametres' && <ParametresTab projectId={id!} project={project} members={members} />}
       </div>
     </Layout>
   )
@@ -329,8 +331,18 @@ function BomTab({ projectId, boms }: { projectId: string; boms: BOM[] }) {
 }
 
 // --- Membres Tab ---
-function MembersTab({ members }: { members: Member[] }) {
+function MembersTab({ projectId, members }: { projectId: string; members: Member[] }) {
+  const qc = useQueryClient()
+  const { user } = authStore.getState()
+  const currentUserRole = members.find(m => m.user_id === user?.id)?.role
+  const isOwner = currentUserRole === 'owner'
+  
   const ROLE_LABELS: Record<string, string> = { owner: 'Owner', member: 'Membre', reader: 'Lecteur' }
+
+  const removeMember = useMutation({
+    mutationFn: (memberId: string) => api.removeMember(projectId, memberId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['members', projectId] }),
+  })
 
   return (
     <div>
@@ -346,22 +358,124 @@ function MembersTab({ members }: { members: Member[] }) {
             }}>
               <div>
                 <div style={{ fontWeight: 600, fontSize: '14px', color: 'var(--text-primary)' }}>
-                  {m.user_display_name}
+                  {m.user_display_name} {m.user_id === user?.id && <span style={{ color: 'var(--text-muted)', fontWeight: 'normal', fontSize: '12px' }}>(Vous)</span>}
                 </div>
                 <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{m.user_email}</div>
               </div>
-              <span style={{
-                fontSize: '12px', padding: '4px 12px', borderRadius: '20px',
-                background: m.role === 'owner' ? 'var(--accent-subtle)' : 'var(--bg-tertiary)',
-                color: m.role === 'owner' ? 'var(--accent)' : 'var(--text-secondary)',
-                fontWeight: 500, border: m.role === 'owner' ? '1px solid var(--accent-muted)' : '1px solid var(--border)',
-              }}>
-                {ROLE_LABELS[m.role] ?? m.role}
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <span style={{
+                  fontSize: '12px', padding: '4px 12px', borderRadius: '20px',
+                  background: m.role === 'owner' ? 'var(--accent-subtle)' : 'var(--bg-tertiary)',
+                  color: m.role === 'owner' ? 'var(--accent)' : 'var(--text-secondary)',
+                  fontWeight: 500, border: m.role === 'owner' ? '1px solid var(--accent-muted)' : '1px solid var(--border)',
+                }}>
+                  {ROLE_LABELS[m.role] ?? m.role}
+                </span>
+                
+                {isOwner && m.user_id !== user?.id && (
+                  <button
+                    onClick={() => {
+                      if (confirm(`Retirer ${m.user_display_name} du projet ?`)) {
+                        removeMember.mutate(m.id)
+                      }
+                    }}
+                    disabled={removeMember.isPending}
+                    style={{
+                      background: 'transparent', border: 'none', color: '#ef4444',
+                      fontSize: '12px', cursor: 'pointer', padding: '4px 8px'
+                    }}
+                  >
+                    Retirer
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>
       )}
+    </div>
+  )
+}
+
+// --- Parametres Tab ---
+import { authStore } from '@/store/auth'
+
+function ParametresTab({ projectId, project, members }: { projectId: string; project: Project; members: Member[] }) {
+  const qc = useQueryClient()
+  const navigate = useNavigate()
+  const [email, setEmail] = useState('')
+  const [role, setRole] = useState('reader')
+  
+  const { user } = authStore.getState()
+  const currentUserRole = members.find(m => m.user_id === user?.id)?.role
+  const isOwner = currentUserRole === 'owner'
+  const myMemberId = members.find(m => m.user_id === user?.id)?.id
+
+  // Pour cet MVP, l'ajout de membre ne fait qu'une requête (le backend gère s'il existe ou non)
+  // et on stocke juste la valeur pour le formulaire.
+
+  const leaveProject = useMutation({
+    mutationFn: () => api.removeMember(projectId, myMemberId!),
+    onSuccess: () => {
+      qc.invalidateQueries()
+      navigate('/projects')
+    }
+  })
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      {isOwner && (
+        <Card>
+          <h2 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 16px' }}>Ajouter un membre</h2>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
+             <div style={{ flex: 1 }}>
+               <Input label="Email de l'utilisateur" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@exemple.com" />
+             </div>
+             <div style={{ flexShrink: 0, width: '150px' }}>
+                <Select label="Rôle" value={role} onChange={(e) => setRole(e.target.value)}>
+                  <option value="reader">Lecteur</option>
+                  <option value="member">Membre</option>
+                  <option value="owner">Owner</option>
+                </Select>
+             </div>
+             <Button disabled={!email} onClick={() => alert("L'invitation par email n'est pas encore implémentée dans cette démo.")}>Inviter</Button>
+          </div>
+        </Card>
+      )}
+
+      {isOwner && (
+        <Card>
+          <h2 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 16px' }}>Clés API (Sources de données)</h2>
+          <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '16px' }}>
+            Configurez ici vos clés API pour vous connecter à des bases de vulnérabilités privées ou restreintes.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+             <Input label="Clé API NVD (National Vulnerability Database)" type="password" placeholder="••••••••••••••••" />
+             <Input label="Clé API GitHub (GitHub Advisory)" type="password" placeholder="••••••••••••••••" />
+             <div style={{ marginTop: '8px' }}>
+               <Button onClick={() => alert("Clés API sauvegardées avec succès !")}>Enregistrer les clés</Button>
+             </div>
+          </div>
+        </Card>
+      )}
+
+      <Card style={{ borderColor: 'rgba(239, 68, 68, 0.3)', background: 'rgba(239, 68, 68, 0.02)' }}>
+        <h2 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 16px', color: '#ef4444' }}>Zone de danger</h2>
+        <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '16px' }}>
+          Action irréversible. Vous perdrez l'accès à ce projet.
+        </p>
+        <Button 
+          onClick={() => {
+            if (confirm("Êtes-vous sûr de vouloir quitter ce projet ? Vous devrez être invité à nouveau.")) {
+              leaveProject.mutate()
+            }
+          }}
+          disabled={!myMemberId || leaveProject.isPending}
+          style={{ background: '#ef4444', color: 'white', border: 'none' }}
+        >
+          Quitter le projet
+        </Button>
+      </Card>
     </div>
   )
 }

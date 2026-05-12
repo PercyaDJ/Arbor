@@ -29,6 +29,7 @@ class BOMFormat(str, enum.Enum):
     CYCLONEDX_XML = "cyclonedx_xml"
     SPDX_JSON = "spdx_json"
     SPDX_XML = "spdx_xml"
+    CSV = "csv"
 
 
 # --- Type BOM ---

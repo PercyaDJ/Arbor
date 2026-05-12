@@ -7,6 +7,7 @@ import { RegisterPage } from '@/pages/RegisterPage'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { ProjectsPage } from '@/pages/ProjectsPage'
 import { ProjectDetailPage } from '@/pages/ProjectDetailPage'
+import { SettingsPage } from '@/pages/SettingsPage'
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
   const isAuth = authStore.isAuthenticated()
@@ -47,6 +48,7 @@ function App() {
       <Route path="/projects" element={<PrivateRoute><ProjectsPage /></PrivateRoute>} />
       <Route path="/projects/new" element={<PrivateRoute><ProjectsPage /></PrivateRoute>} />
       <Route path="/projects/:id" element={<PrivateRoute><ProjectDetailPage /></PrivateRoute>} />
+      <Route path="/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
 
       {/* Default Redirect */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />

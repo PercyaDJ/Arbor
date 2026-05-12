@@ -175,6 +175,9 @@ class ArborApiClient {
   }
   getMe() { return this.request<User>('GET', '/auth/me') }
   updateMe(data: Partial<User>) { return this.request<User>('PATCH', '/auth/me', data) }
+  changePassword(current_password: string, new_password: string) {
+    return this.request<void>('POST', '/auth/change-password', { current_password, new_password })
+  }
 
   // Projects
   getProjects() { return this.request<Project[]>('GET', '/projects/') }
