@@ -9,7 +9,7 @@ import { api } from '@/api/client'
 import { authStore } from '@/store/auth'
 import { Layout, PageHeader } from '@/components/Layout'
 import { Button, SeverityBadge, StatusBadge, Spinner, EmptyState, Select, Card, Input } from '@/components/ui'
-import type { Alert, BOM, Member, ApiError, Project } from '@/api/client'
+import type { Alert, BOM, Member, ApiError } from '@/api/client'
 
 type Tab = 'alertes' | 'bom' | 'membres' | 'parametres'
 
