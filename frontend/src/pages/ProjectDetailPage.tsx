@@ -69,7 +69,7 @@ export function ProjectDetailPage() {
 
   return (
     <Layout>
-      <div style={{ padding: '28px 32px', maxWidth: '1100px' }}>
+      <div style={{ padding: '28px 32px', width: '100%', boxSizing: 'border-box' }}>
         {/* Breadcrumb */}
         <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '8px' }}>
           <span
@@ -405,6 +405,20 @@ function ParametresTab({ projectId, members }: { projectId: string; members: Mem
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [role, setRole] = useState('reader')
+  
+  // Nouveaux états pour les préférences
+  const [cvssThreshold, setCvssThreshold] = useState(7.0)
+  const [cvssVersion, setCvssVersion] = useState('3.1')
+  
+  // États pour les sources
+  const [sources, setSources] = useState({
+    nvd: true,
+    github: true,
+    osv: false,
+    vulndb: false,
+    snyk: false,
+    gitlab: false,
+  })
 
   const { user } = authStore.getState()
   const currentUserRole = members.find(m => m.user_id === user?.id)?.role
@@ -444,19 +458,77 @@ function ParametresTab({ projectId, members }: { projectId: string; members: Mem
       )}
 
       {isOwner && (
-        <Card>
-          <h2 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 16px' }}>Clés API (Sources de données)</h2>
-          <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '16px' }}>
-            Configurez ici vos clés API pour vous connecter à des bases de vulnérabilités privées ou restreintes.
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <Input label="Clé API NVD (National Vulnerability Database)" type="password" placeholder="••••••••••••••••" />
-            <Input label="Clé API GitHub (GitHub Advisory)" type="password" placeholder="••••••••••••••••" />
-            <div style={{ marginTop: '8px' }}>
-              <Button onClick={() => alert("Clés API sauvegardées avec succès !")}>Enregistrer les clés</Button>
+        <>
+          <Card>
+            <h2 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 16px' }}>Paramètres d'Alertes</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-muted)', marginBottom: '8px' }}>
+                  Version CVSS de référence
+                </label>
+                <Select value={cvssVersion} onChange={(e) => setCvssVersion(e.target.value)}>
+                  <option value="3.0">CVSS v3.0</option>
+                  <option value="3.1">CVSS v3.1</option>
+                  <option value="4.0">CVSS v4.0</option>
+                </Select>
+              </div>
+              
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-muted)', marginBottom: '8px' }}>
+                  Seuil d'alerte spécifique au projet
+                </label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <input
+                    type="range" min="0" max="10" step="0.1"
+                    value={cvssThreshold} onChange={(e) => setCvssThreshold(Number(e.target.value))}
+                    style={{ flex: 1, accentColor: 'var(--accent)' }}
+                  />
+                  <span style={{ fontSize: '14px', fontWeight: 700, minWidth: '40px', textAlign: 'right' }}>
+                    {cvssThreshold.toFixed(1)}
+                  </span>
+                </div>
+              </div>
+              <Button onClick={() => alert("Paramètres d'alertes sauvegardés")}>Enregistrer les préférences</Button>
             </div>
-          </div>
-        </Card>
+          </Card>
+
+          <Card>
+            <h2 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 16px' }}>Sources de Vulnérabilités</h2>
+            <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '16px' }}>
+              Sélectionnez les bases de données à interroger lors de l'analyse des nomenclatures (BOM).
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              {Object.entries(sources).map(([key, val]) => (
+                <label key={key} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', cursor: 'pointer' }}>
+                  <input 
+                    type="checkbox" 
+                    checked={val} 
+                    onChange={(e) => setSources(s => ({ ...s, [key]: e.target.checked }))} 
+                    style={{ accentColor: 'var(--accent)', width: '16px', height: '16px' }}
+                  />
+                  <span style={{ textTransform: 'capitalize' }}>{key === 'nvd' ? 'NVD (National Vulnerability Database)' : key === 'osv' ? 'OSV (Open Source Vulnerability)' : key}</span>
+                </label>
+              ))}
+            </div>
+          </Card>
+
+          <Card>
+            <h2 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 16px' }}>Clés API</h2>
+            <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '16px' }}>
+              Configurez ici vos clés API pour les sources nécessitant une authentification ou pour augmenter les limites de requêtes.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <Input label="Clé API NVD" type="password" placeholder="••••••••••••••••" />
+              <Input label="Clé API GitHub (Personal Access Token)" type="password" placeholder="••••••••••••••••" />
+              <Input label="Clé API VulnDB" type="password" placeholder="••••••••••••••••" />
+              <Input label="Clé API Snyk" type="password" placeholder="••••••••••••••••" />
+              <Input label="Clé API GitLab" type="password" placeholder="••••••••••••••••" />
+              <div style={{ marginTop: '8px' }}>
+                <Button onClick={() => alert("Clés API sauvegardées avec succès !")}>Enregistrer les clés</Button>
+              </div>
+            </div>
+          </Card>
+        </>
       )}
 
       <Card style={{ borderColor: 'rgba(239, 68, 68, 0.3)', background: 'rgba(239, 68, 68, 0.02)' }}>

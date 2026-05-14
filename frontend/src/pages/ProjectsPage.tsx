@@ -2,9 +2,9 @@
  * ARBOR - Liste des projets
  */
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { api } from '@/api/client'
 import { Layout, PageHeader } from '@/components/Layout'
 import { Button, Card, EmptyState, Input, Spinner } from '@/components/ui'
@@ -12,11 +12,18 @@ import type { ApiError } from '@/api/client'
 
 export function ProjectsPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const qc = useQueryClient()
-  const [showCreate, setShowCreate] = useState(false)
+  const [showCreate, setShowCreate] = useState(location.pathname === '/projects/new')
   const [newName, setNewName] = useState('')
   const [newDesc, setNewDesc] = useState('')
   const [createError, setCreateError] = useState('')
+
+  useEffect(() => {
+    if (location.pathname === '/projects/new') {
+      setShowCreate(true)
+    }
+  }, [location.pathname])
 
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ['projects'],
@@ -40,7 +47,7 @@ export function ProjectsPage() {
 
   return (
     <Layout>
-      <div style={{ padding: '28px 32px', maxWidth: '1100px' }}>
+      <div style={{ padding: '28px 32px', width: '100%', boxSizing: 'border-box' }}>
         <PageHeader
           title="Projets"
           subtitle={`${activeProjects.length} projet${activeProjects.length !== 1 ? 's' : ''} actif${activeProjects.length !== 1 ? 's' : ''}`}

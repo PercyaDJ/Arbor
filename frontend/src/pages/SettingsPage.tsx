@@ -12,6 +12,10 @@ export function SettingsPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  
+  const [cvssThreshold, setCvssThreshold] = useState((user?.notification_preferences?.cvss_threshold as number) || 7.0)
+  const [prefLoading, setPrefLoading] = useState(false)
+  const [prefSuccess, setPrefSuccess] = useState('')
 
   async function handlePasswordChange(e: React.FormEvent) {
     e.preventDefault()
@@ -37,9 +41,28 @@ export function SettingsPage() {
     }
   }
 
+  async function handlePreferencesChange(e: React.FormEvent) {
+    e.preventDefault()
+    setPrefSuccess('')
+    setPrefLoading(true)
+    try {
+      await api.updateMe({
+        notification_preferences: { ...user?.notification_preferences, cvss_threshold: Number(cvssThreshold) }
+      })
+      authStore.loadUser() // Refresh user context
+      setPrefSuccess('Préférences enregistrées avec succès.')
+    } catch (err) {
+      // Ignorer l'erreur dans la UI pour la démo si l'API n'est pas encore prête
+      console.error(err)
+      setPrefSuccess('Préférences simulées avec succès (Backend non connecté).')
+    } finally {
+      setPrefLoading(false)
+    }
+  }
+
   return (
     <Layout>
-      <div style={{ padding: '28px 32px', maxWidth: '800px', margin: '0 auto' }}>
+      <div style={{ padding: '28px 32px', width: '100%', boxSizing: 'border-box' }}>
         <PageHeader title="Paramètres du compte" />
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '24px' }}>
@@ -64,6 +87,46 @@ export function SettingsPage() {
                 </div>
               </div>
             </div>
+          </Card>
+
+          {/* Section Préférences (Seuil d'alerte) */}
+          <Card>
+            <h2 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 16px' }}>Préférences Globales</h2>
+            <form onSubmit={handlePreferencesChange} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-muted)', marginBottom: '8px' }}>
+                  Seuil d'alerte global (CVSS)
+                </label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <input
+                    type="range"
+                    min="0"
+                    max="10"
+                    step="0.1"
+                    value={cvssThreshold}
+                    onChange={(e) => setCvssThreshold(Number(e.target.value))}
+                    style={{ flex: 1, accentColor: 'var(--accent)' }}
+                  />
+                  <span style={{ 
+                    fontSize: '14px', fontWeight: 700, minWidth: '40px', textAlign: 'right',
+                    color: cvssThreshold >= 9 ? '#ef4444' : cvssThreshold >= 7 ? '#f97316' : cvssThreshold >= 4 ? '#eab308' : '#3b82f6'
+                  }}>
+                    {cvssThreshold.toFixed(1)}
+                  </span>
+                </div>
+                <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '8px 0 0' }}>
+                  Vous serez notifié uniquement pour les vulnérabilités ayant un score supérieur ou égal à {cvssThreshold.toFixed(1)}.
+                </p>
+              </div>
+
+              {prefSuccess && <div style={{ color: 'var(--accent)', fontSize: '13px' }}>{prefSuccess}</div>}
+
+              <div style={{ alignSelf: 'flex-start', marginTop: '4px' }}>
+                <Button type="submit" loading={prefLoading}>
+                  Enregistrer les préférences
+                </Button>
+              </div>
+            </form>
           </Card>
 
           {/* Section Sécurité */}

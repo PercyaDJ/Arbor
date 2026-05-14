@@ -139,14 +139,21 @@ export function PageHeader({
 
 // --- Stats Card ---
 export function StatCard({
-  label, value, color = 'var(--accent)', icon,
-}: { label: string; value: number | string; color?: string; icon: string }) {
+  label, value, color = 'var(--accent)', icon, onClick,
+}: { label: string; value: number | string; color?: string; icon: string; onClick?: () => void }) {
   return (
-    <div style={{
-      background: 'var(--bg-secondary)', border: '1px solid var(--border)',
-      borderRadius: '12px', padding: '20px 24px',
-      display: 'flex', alignItems: 'center', gap: '16px',
-    }}>
+    <div 
+      onClick={onClick}
+      style={{
+        background: 'var(--bg-secondary)', border: '1px solid var(--border)',
+        borderRadius: '12px', padding: '20px 24px',
+        display: 'flex', alignItems: 'center', gap: '16px',
+        cursor: onClick ? 'pointer' : 'default',
+        transition: 'transform 0.2s',
+      }}
+      onMouseOver={(e) => onClick && (e.currentTarget.style.transform = 'translateY(-2px)')}
+      onMouseOut={(e) => onClick && (e.currentTarget.style.transform = 'translateY(0)')}
+    >
       <div style={{
         width: '44px', height: '44px', borderRadius: '10px',
         background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center',
